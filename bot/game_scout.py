@@ -200,7 +200,7 @@ def find_top_channels_for_game(service, game_name: str, max_results: int = 5) ->
 
     for ch in channels_resp.get("items", []):
         subs = int(ch["statistics"].get("subscriberCount", 0))
-        if subs >= 100_000:   # Only channels with 100K+ subs
+        if 100_000 <= subs <= 2_500_000:   # Focus on mid-sized active channels (avoids mega-celebrity bot-blocks)
             results.append({
                 "channel_id": ch["id"],
                 "title": ch["snippet"]["title"],

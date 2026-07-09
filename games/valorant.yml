@@ -12,10 +12,6 @@ upload_description_template: |
   source:{source_video_id}
 blocklist: "./blocklists/shared_blocklist.txt"
 sources:
-  - channel_id: "UCoz3Kpu5lv-ALhR4h9bDvcw"   # shroud (6.7M subs)
-    provenance: "creative_commons"
-  - channel_id: "UCckPYr9b_iVucz8ID1Q67sw"   # TenZ (2.7M subs)
-    provenance: "creative_commons"
   - channel_id: "UCBugd2yQNL4TNwHdA56GdnA"   # aceu (1.8M subs)
     provenance: "creative_commons"
   - channel_id: "UCgm4Lm43bbQJukcQmY9hCBQ"   # Metaphor (454K subs)

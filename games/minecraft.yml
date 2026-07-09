@@ -12,9 +12,10 @@ upload_description_template: |
   source:{source_video_id}
 blocklist: "./blocklists/shared_blocklist.txt"
 sources:
-  - channel_id: "UCTkXRDQl0luXxVQrRQvWS6w"   # Dream (34.5M subs)
+  # Active Minecraft gameplay channels (less aggressive bot blocks than mega-celebrities)
+  - channel_id: "UC3xZYc4SZUGfRERIvDRGqDQ"   # Skip the Tutorial
     provenance: "creative_commons"
-  - channel_id: "UCR9Gcq0CMm6YgTzsDxAxjOQ"   # Grian (8.9M subs)
+  - channel_id: "UC112T3YjJ_G-x1q8dK4tZZA"   # wattles
     provenance: "creative_commons"
-  - channel_id: "UC5p_l5ZeB_wGjO_yDXwiqvw"   # TommyInnit (15M subs)
+  - channel_id: "UChFur_NwVSbUozOcF_F2kMg"   # Mumbo Jumbo
     provenance: "creative_commons"
