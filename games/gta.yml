@@ -3,8 +3,8 @@ game_slug: "gta"
 enabled: true
 cloud_project_id: "erudite-spot-501908-e0"
 credential_secret: "YOUTUBE_OAUTH_JSON"
-schedule: "0 12 * * *"                              # Once a day at 12:00 UTC
-tags: ["gta", "shorts", "gaming", "gtav", "gta5", "gtaonline", "gtaclips"]
+schedule: "* * * * *"
+tags: ["gta", "shorts", "gaming", "gtav", "gta5", "gtaonline", "gtashorts"]
 upload_title_template: "{clip_title} #Shorts"
 upload_description_template: |
   {voiceover_script}
@@ -12,6 +12,11 @@ upload_description_template: |
   source:{source_video_id}
 blocklist: "./blocklists/shared_blocklist.txt"
 sources:
-  # Using active Creative Commons channel No Copyright Gameplay
-  - channel_id: "UC4r6nalq_1-9rc80qdVLatQ"
-    provenance: "creative_commons"
+  - channel_id: "UCRC6cNamj9tYAO6h_RXd5xA"   # RTGame (2.9M subs)
+    provenance: "public"
+  - channel_id: "UC0PMQXAwF6O6aeTpv962miA"   # MrBossFTW (3.1M subs)
+    provenance: "public"
+  - channel_id: "UC7_YxT-KID8kRbqZo7MyscQ"   # Markiplier (38.7M subs)
+    provenance: "public"
+  - channel_id: "UCYzPXprvl5Y-Sf0g4vX-m6g"   # jacksepticeye (31.2M subs)
+    provenance: "public"

@@ -74,12 +74,43 @@ def download(candidate: dict, config: GameConfig) -> str:
     
     cookies_file = _get_cookies_file()
     
+    # Pre-flight: check if video has actual video formats (not image-only posts)
+    check_cmd = [
+        "yt-dlp",
+        "--no-warnings",
+        "-J",           # dump JSON info only, no download
+        "--skip-download",
+    ]
+    if cookies_file:
+        check_cmd += ["--cookies", cookies_file]
+    check_cmd.append(url)
+    
+    check_res = subprocess.run(check_cmd, capture_output=True, text=True)
+    if check_res.returncode == 0:
+        try:
+            import json as _json
+            info = _json.loads(check_res.stdout)
+            formats = info.get("formats", [])
+            has_video = any(
+                f.get("vcodec", "none") not in ("none", None) and
+                f.get("ext") not in ("jpg", "jpeg", "png", "webp")
+                for f in formats
+            )
+            if not has_video:
+                raise DownloadError(f"Video {video_id} has no downloadable video formats (image-only or community post).")
+        except DownloadError:
+            raise
+        except Exception:
+            pass  # If JSON parse fails, proceed and let yt-dlp handle it
+
     cmd = [
         "yt-dlp",
-        "-f", "bestvideo[height<=1080]+bestaudio/best[height<=1080]",
+        # Robust format chain: prefer best mp4, fall back to any video+audio, then best overall
+        "-f", "bestvideo[ext=mp4][height<=1080]+bestaudio[ext=m4a]/bestvideo[height<=1080]+bestaudio/best[height<=1080]/best",
         "--merge-output-format", "mp4",
-        "--sleep-interval", "2",          # Be polite to avoid rate limits
+        "--sleep-interval", "2",
         "--extractor-retries", "3",
+        "--no-playlist",
         "-o", output_template,
     ]
     

@@ -3,8 +3,8 @@ game_slug: "valorant"
 enabled: true
 cloud_project_id: "erudite-spot-501908-e0"
 credential_secret: "YOUTUBE_OAUTH_JSON"
-schedule: "0 0 * * *"                               # Once a day at 00:00 UTC
-tags: ["valorant", "shorts", "gaming", "vct", "valorantclips"]
+schedule: "* * * * *"
+tags: ["valorant", "shorts", "gaming", "vct", "valorantclips", "valorantshorts"]
 upload_title_template: "{clip_title} #Shorts"
 upload_description_template: |
   {voiceover_script}
@@ -12,6 +12,11 @@ upload_description_template: |
   source:{source_video_id}
 blocklist: "./blocklists/shared_blocklist.txt"
 sources:
-  # Using active Creative Commons channel No Copyright Gameplay
-  - channel_id: "UC4r6nalq_1-9rc80qdVLatQ"
-    provenance: "creative_commons"
+  - channel_id: "UCoz3Kpu5lv-ALhR4h9bDvcw"   # shroud (6.7M subs)
+    provenance: "public"
+  - channel_id: "UCckPYr9b_iVucz8ID1Q67sw"   # TenZ (2.7M subs)
+    provenance: "public"
+  - channel_id: "UCBugd2yQNL4TNwHdA56GdnA"   # aceu (1.8M subs)
+    provenance: "public"
+  - channel_id: "UCgm4Lm43bbQJukcQmY9hCBQ"   # Metaphor (454K subs)
+    provenance: "public"
