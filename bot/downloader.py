@@ -107,8 +107,7 @@ def download(candidate: dict, config: GameConfig) -> str:
 
     cmd = [
         "yt-dlp",
-        # Robust format chain: prefer best mp4, fall back to any video+audio, then best overall
-        "-f", "bestvideo[ext=mp4][height<=1080]+bestaudio[ext=m4a]/bestvideo[height<=1080]+bestaudio/best[height<=1080]/best",
+        "-f", "best[height<=1080]/best",
         "--merge-output-format", "mp4",
         "--sleep-interval", "2",
         "--extractor-retries", "3",
