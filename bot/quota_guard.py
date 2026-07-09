@@ -62,7 +62,7 @@ def check_discovery_gate(config: GameConfig, cost: int) -> None:
     if project_used + cost > 8400:
         raise PipelineExit("quota-reserved-for-upload")
         
-    if discovery_used + cost > 50:
+    if discovery_used + cost > 500:
         raise DiscoveryQuotaLimitReached()
 
 def commit_quota(cloud_project_id: str, game_slug: str, cost: int, counts_toward_discovery: bool, max_retries: int = 5) -> None:
