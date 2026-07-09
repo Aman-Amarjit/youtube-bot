@@ -1,0 +1,31 @@
+name: Auto Discover Trending Games
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'     # Run weekly at Sunday 00:00 UTC
+  workflow_dispatch:        # Allow manual triggering
+
+permissions:
+  contents: write
+
+jobs:
+  scout-new-games:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install PyYAML google-api-python-client google-auth requests
+
+      - name: Run Game Scout
+        env:
+          YOUTUBE_OAUTH_JSON: ${{ secrets.YOUTUBE_OAUTH_JSON }}
+          CLOUD_PROJECT_ID: "erudite-spot-501908-e0"
+        run: python run_scout.py
