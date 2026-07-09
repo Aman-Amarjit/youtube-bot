@@ -57,7 +57,7 @@ jobs:
       fail-fast: false       # One game failing must not cancel others
       matrix: ${{ fromJSON(needs.build-matrix.outputs.matrix) }}
     concurrency:
-      group: quota-${{ matrix.cloud_project_id }}
+      group: quota-${{ matrix.cloud_project_id }}-${{ matrix.game }}
       cancel-in-progress: false   # Queue; never cancel a running job
     runs-on: ubuntu-latest
     timeout-minutes: 45           # Hard outer cap
