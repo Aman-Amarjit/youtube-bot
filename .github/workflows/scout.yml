@@ -2,7 +2,7 @@ name: Auto Discover Trending Games
 
 on:
   schedule:
-    - cron: '0 0 * * 0'     # Run weekly at Sunday 00:00 UTC
+    - cron: '0 0 * * 0,3'     # Run semi-weekly at Sunday and Wednesday 00:00 UTC
   workflow_dispatch:        # Allow manual triggering
 
 permissions:
