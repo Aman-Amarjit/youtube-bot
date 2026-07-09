@@ -79,6 +79,7 @@ def download(candidate: dict, config: GameConfig) -> str:
         "yt-dlp",
         "--no-warnings",
         "--js-runtimes", "node",
+        "--extractor-args", "youtube:player_client=ios,android,web",
         "-J",           # dump JSON info only, no download
         "--skip-download",
     ]
@@ -113,6 +114,7 @@ def download(candidate: dict, config: GameConfig) -> str:
         "--extractor-retries", "3",
         "--no-playlist",
         "--js-runtimes", "node",
+        "--extractor-args", "youtube:player_client=ios,android,web",
         "-o", output_template,
     ]
     
