@@ -1,0 +1,3 @@
+# Add blocked keywords, one per line (case-insensitive check)
+spamword
+badword
