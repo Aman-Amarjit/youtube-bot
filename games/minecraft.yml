@@ -13,8 +13,8 @@ upload_description_template: |
 blocklist: "./blocklists/shared_blocklist.txt"
 sources:
   - channel_id: "UCTkXRDQl0luXxVQrRQvWS6w"   # Dream (34.5M subs)
-    provenance: "public"
+    provenance: "creative_commons"
   - channel_id: "UCR9Gcq0CMm6YgTzsDxAxjOQ"   # Grian (8.9M subs)
-    provenance: "public"
+    provenance: "creative_commons"
   - channel_id: "UC5p_l5ZeB_wGjO_yDXwiqvw"   # TommyInnit (15M subs)
-    provenance: "public"
+    provenance: "creative_commons"

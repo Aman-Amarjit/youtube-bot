@@ -227,7 +227,7 @@ def write_game_config(game_name: str, channels: list[dict], games_dir: str = "ga
     tags = GAME_TAGS.get(game_name, DEFAULT_TAGS + [slug])
 
     sources = [
-        {"channel_id": ch["channel_id"], "provenance": "public"}
+        {"channel_id": ch["channel_id"], "provenance": "creative_commons"}
         for ch in channels
     ]
 

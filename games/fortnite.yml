@@ -13,8 +13,8 @@ upload_description_template: |
 blocklist: "./blocklists/shared_blocklist.txt"
 sources:
   - channel_id: "UC_q5WZtFp36adwqhKpZzxwQ"   # SypherPK (10.6M subs)
-    provenance: "public"
+    provenance: "creative_commons"
   - channel_id: "UCDvm7YoLE5r3ZZ6MWyD2vGQ"   # NICKMERCS (4.1M subs)
-    provenance: "public"
+    provenance: "creative_commons"
   - channel_id: "UCAW-NpUFkMyCNrvRSSGIvDQ"   # Ninja (23.5M subs)
-    provenance: "public"
+    provenance: "creative_commons"

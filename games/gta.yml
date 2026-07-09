@@ -13,10 +13,10 @@ upload_description_template: |
 blocklist: "./blocklists/shared_blocklist.txt"
 sources:
   - channel_id: "UCRC6cNamj9tYAO6h_RXd5xA"   # RTGame (2.9M subs)
-    provenance: "public"
+    provenance: "creative_commons"
   - channel_id: "UC0PMQXAwF6O6aeTpv962miA"   # MrBossFTW (3.1M subs)
-    provenance: "public"
+    provenance: "creative_commons"
   - channel_id: "UC7_YxT-KID8kRbqZo7MyscQ"   # Markiplier (38.7M subs)
-    provenance: "public"
+    provenance: "creative_commons"
   - channel_id: "UCYzPXprvl5Y-Sf0g4vX-m6g"   # jacksepticeye (31.2M subs)
-    provenance: "public"
+    provenance: "creative_commons"
