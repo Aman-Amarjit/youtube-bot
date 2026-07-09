@@ -113,4 +113,5 @@ jobs:
           YOUTUBE_OAUTH_JSON: ${{ secrets[matrix.credential_secret] }}
           ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          YOUTUBE_COOKIES_B64: ${{ secrets.YOUTUBE_COOKIES_B64 }}
         run: python -m bot.pipeline games/${{ matrix.game }}.yml

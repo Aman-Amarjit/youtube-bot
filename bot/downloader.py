@@ -1,6 +1,8 @@
 import os
+import base64
 import shutil
 import subprocess
+import tempfile
 import time
 from bot.config_loader import GameConfig
 
@@ -18,12 +20,33 @@ def _upgrade_yt_dlp() -> None:
         
     print("Upgrading yt-dlp to the latest version...")
     try:
-        # Run pip install -U yt-dlp
         subprocess.run(["pip", "install", "-U", "yt-dlp"], check=True, capture_output=True)
         _yt_dlp_updated = True
         print("yt-dlp successfully upgraded.")
     except Exception as e:
         print(f"WARNING: Failed to upgrade yt-dlp: {e}. Proceeding with existing version.")
+
+def _get_cookies_file() -> str | None:
+    """
+    Writes the YOUTUBE_COOKIES_B64 env var (base64-encoded Netscape cookies.txt)
+    to a temporary file and returns its path. Returns None if not set.
+    """
+    cookies_b64 = os.environ.get("YOUTUBE_COOKIES_B64", "").strip()
+    if not cookies_b64:
+        return None
+    try:
+        cookies_bytes = base64.b64decode(cookies_b64)
+        tmp = tempfile.NamedTemporaryFile(
+            mode="wb", suffix=".txt", delete=False, prefix="yt_cookies_"
+        )
+        tmp.write(cookies_bytes)
+        tmp.flush()
+        tmp.close()
+        print(f"YouTube cookies written to {tmp.name}")
+        return tmp.name
+    except Exception as e:
+        print(f"WARNING: Failed to decode YOUTUBE_COOKIES_B64: {e}. Downloading without cookies.")
+        return None
 
 def download(candidate: dict, config: GameConfig) -> str:
     """
@@ -38,12 +61,9 @@ def download(candidate: dict, config: GameConfig) -> str:
     temp_dir = f"tmp/{game_slug}"
     os.makedirs(temp_dir, exist_ok=True)
     
-    # We want to output an MP4 file at tmp/{game_slug}/{video_id}.mp4
-    # yt-dlp merge-output-format guarantees it merges video/audio into mp4.
     output_template = os.path.join(temp_dir, f"{video_id}.%(ext)s")
     final_path = os.path.join(temp_dir, f"{video_id}.mp4")
     
-    # Cleanup pre-existing files for this ID if any
     if os.path.exists(final_path):
         try:
             os.remove(final_path)
@@ -51,43 +71,58 @@ def download(candidate: dict, config: GameConfig) -> str:
             pass
             
     url = f"https://www.youtube.com/watch?v={video_id}"
+    
+    cookies_file = _get_cookies_file()
+    
     cmd = [
         "yt-dlp",
         "-f", "bestvideo[height<=1080]+bestaudio/best[height<=1080]",
         "--merge-output-format", "mp4",
+        "--sleep-interval", "2",          # Be polite to avoid rate limits
+        "--extractor-retries", "3",
         "-o", output_template,
-        url
     ]
     
+    if cookies_file:
+        cmd += ["--cookies", cookies_file]
+    
+    cmd.append(url)
+    
     max_attempts = 4
-    for attempt in range(max_attempts):
-        print(f"Downloading video {video_id} (Attempt {attempt+1}/{max_attempts})...")
-        res = subprocess.run(cmd, capture_output=True, text=True)
-        
-        if res.returncode == 0:
-            # Locate the downloaded file
-            # In some cases, yt-dlp might download directly as mp4 or mkv and merge.
-            # If final_path exists, we're good.
-            if os.path.exists(final_path):
-                print(f"Download succeeded: {final_path}")
-                return os.path.abspath(final_path)
+    cookies_cleanup_done = False
+    
+    try:
+        for attempt in range(max_attempts):
+            print(f"Downloading video {video_id} (Attempt {attempt+1}/{max_attempts})...")
+            res = subprocess.run(cmd, capture_output=True, text=True)
+            
+            if res.returncode == 0:
+                if os.path.exists(final_path):
+                    print(f"Download succeeded: {final_path}")
+                    return os.path.abspath(final_path)
+                else:
+                    for filename in os.listdir(temp_dir):
+                        if filename.startswith(video_id) and filename.endswith(".mp4"):
+                            found_path = os.path.abspath(os.path.join(temp_dir, filename))
+                            print(f"Download succeeded (resolved path): {found_path}")
+                            return found_path
+                            
+                print("WARNING: yt-dlp succeeded but output file was not found.")
             else:
-                # Find any file starting with video_id in the temp directory
-                for filename in os.listdir(temp_dir):
-                    if filename.startswith(video_id) and filename.endswith(".mp4"):
-                        found_path = os.path.abspath(os.path.join(temp_dir, filename))
-                        print(f"Download succeeded (resolved path): {found_path}")
-                        return found_path
-                        
-            print("WARNING: yt-dlp succeeded but output file was not found.")
-        else:
-            print(f"Download attempt {attempt+1} failed: returncode={res.returncode}")
-            print(f"yt-dlp stderr: {res.stderr}")
-            
-        if attempt < max_attempts - 1:
-            time.sleep(2)
-            
-    raise DownloadError(f"Failed to download video {video_id} after {max_attempts} attempts.")
+                print(f"Download attempt {attempt+1} failed: returncode={res.returncode}")
+                print(f"yt-dlp stderr: {res.stderr[-2000:]}")
+                
+            if attempt < max_attempts - 1:
+                time.sleep(2)
+                
+        raise DownloadError(f"Failed to download video {video_id} after {max_attempts} attempts.")
+    finally:
+        # Clean up the temporary cookies file
+        if cookies_file and not cookies_cleanup_done:
+            try:
+                os.remove(cookies_file)
+            except Exception:
+                pass
 
 def cleanup(config: GameConfig) -> None:
     """Cleans up all temp files under tmp/{game_slug}/."""
