@@ -1,11 +1,12 @@
 {
   "2026-07-09": {
     "projects": {
-      "erudite-spot-501908-e0": 5
+      "erudite-spot-501908-e0": 6
     },
     "discovery": {
       "minecraft": 1,
-      "gta": 1
+      "gta": 1,
+      "fortnite": 1
     }
   }
 }
