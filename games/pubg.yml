@@ -1,0 +1,16 @@
+game_name: "PUBG"
+game_slug: "pubg"
+enabled: true
+cloud_project_id: "your-gcp-project-pubg"
+credential_secret: "YOUTUBE_OAUTH_PUBG"
+schedule: "0 4,10,16,22 * * *"                     # Runs at 04:00, 10:00, 16:00, 22:00 UTC
+tags: ["pubg", "shorts", "gaming", "pubgmobile", "pubgclips"]
+upload_title_template: "{clip_title} #Shorts"
+upload_description_template: |
+  {voiceover_script}
+
+  source:{source_video_id}
+blocklist: "./blocklists/shared_blocklist.txt"
+sources:
+  - url: "https://www.youtube.com/watch?v=F3zWvB0S5X0"
+    provenance: "creative_commons"

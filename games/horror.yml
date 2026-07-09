@@ -1,0 +1,16 @@
+game_name: "Horror Games"
+game_slug: "horror"
+enabled: true
+cloud_project_id: "your-gcp-project-horror"
+credential_secret: "YOUTUBE_OAUTH_HORROR"
+schedule: "0 0,6,12,18 * * *"                      # Runs at 00:00, 06:00, 12:00, 18:00 UTC (concurrent with Valorant)
+tags: ["horror", "shorts", "gaming", "horrorgames", "scary", "jumpscare", "scaryclips"]
+upload_title_template: "{clip_title} #Shorts"
+upload_description_template: |
+  {voiceover_script}
+
+  source:{source_video_id}
+blocklist: "./blocklists/shared_blocklist.txt"
+sources:
+  - url: "https://www.youtube.com/watch?v=F3zWvB0S5X0"
+    provenance: "creative_commons"

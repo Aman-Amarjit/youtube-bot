@@ -1,0 +1,16 @@
+game_name: "GTA"
+game_slug: "gta"
+enabled: true
+cloud_project_id: "your-gcp-project-gta"
+credential_secret: "YOUTUBE_OAUTH_GTA"
+schedule: "0 2,8,14,20 * * *"                      # Runs at 02:00, 08:00, 14:00, 20:00 UTC
+tags: ["gta", "shorts", "gaming", "gtav", "gta5", "gtaonline", "gtaclips"]
+upload_title_template: "{clip_title} #Shorts"
+upload_description_template: |
+  {voiceover_script}
+
+  source:{source_video_id}
+blocklist: "./blocklists/shared_blocklist.txt"
+sources:
+  - url: "https://www.youtube.com/watch?v=F3zWvB0S5X0"
+    provenance: "creative_commons"

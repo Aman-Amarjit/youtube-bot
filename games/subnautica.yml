@@ -1,0 +1,16 @@
+game_name: "Subnautica"
+game_slug: "subnautica"
+enabled: true
+cloud_project_id: "your-gcp-project-subnautica"
+credential_secret: "YOUTUBE_OAUTH_SUBNAUTICA"
+schedule: "0 5,11,17,23 * * *"                     # Runs at 05:00, 11:00, 17:00, 23:00 UTC
+tags: ["subnautica", "shorts", "gaming", "subnauticaclips", "deepsea"]
+upload_title_template: "{clip_title} #Shorts"
+upload_description_template: |
+  {voiceover_script}
+
+  source:{source_video_id}
+blocklist: "./blocklists/shared_blocklist.txt"
+sources:
+  - url: "https://www.youtube.com/watch?v=F3zWvB0S5X0"
+    provenance: "creative_commons"
