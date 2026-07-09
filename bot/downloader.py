@@ -78,6 +78,7 @@ def download(candidate: dict, config: GameConfig) -> str:
     check_cmd = [
         "yt-dlp",
         "--no-warnings",
+        "--js-runtimes", "node",
         "-J",           # dump JSON info only, no download
         "--skip-download",
     ]
@@ -111,6 +112,7 @@ def download(candidate: dict, config: GameConfig) -> str:
         "--sleep-interval", "2",
         "--extractor-retries", "3",
         "--no-playlist",
+        "--js-runtimes", "node",
         "-o", output_template,
     ]
     
