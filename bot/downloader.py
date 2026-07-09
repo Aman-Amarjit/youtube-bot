@@ -74,12 +74,18 @@ def download(candidate: dict, config: GameConfig) -> str:
     
     cookies_file = _get_cookies_file()
     
+    # When cookies are provided, only the web client supports cookie auth.
+    # ios/android clients skip cookies and fall back to image-only format lists.
+    if cookies_file:
+        player_client_arg = "web"
+    else:
+        player_client_arg = "ios,android,web"
+
     # Pre-flight: check if video has actual video formats (not image-only posts)
     check_cmd = [
         "yt-dlp",
         "--no-warnings",
-        "--js-runtimes", "node",
-        "--extractor-args", "youtube:player_client=ios,android,web",
+        "--extractor-args", f"youtube:player_client={player_client_arg}",
         "-J",           # dump JSON info only, no download
         "--skip-download",
     ]
@@ -107,13 +113,12 @@ def download(candidate: dict, config: GameConfig) -> str:
 
     cmd = [
         "yt-dlp",
-        "-f", "best[height<=1080]/best",
+        "-f", "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=1080]+bestaudio/best[height<=1080]/best",
         "--merge-output-format", "mp4",
         "--sleep-interval", "2",
         "--extractor-retries", "3",
         "--no-playlist",
-        "--js-runtimes", "node",
-        "--extractor-args", "youtube:player_client=ios,android,web",
+        "--extractor-args", f"youtube:player_client={player_client_arg}",
         "-o", output_template,
     ]
     
