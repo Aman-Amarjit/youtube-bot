@@ -1,0 +1,108 @@
+name: Auto YouTube Clip Bot
+
+on:
+  schedule:
+    - cron: '0 * * * *'    # Hourly; per-game schedule enforced in Python code
+  workflow_dispatch:
+
+env:
+  WHISPER_MODEL: base      # Change to 'small' for better transcription quality
+
+jobs:
+  # ─── Job 1: Dynamically build the matrix from games/*.yml ───────────────────
+  build-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build game matrix
+        id: set-matrix
+        run: |
+          # Reads every games/*.yml, extracts game slug + cloud_project_id,
+          # and emits a JSON array for fromJSON() below.
+          #
+          # heredoc: pipe goes on the OPENING line so EOF is a terminator
+          python - <<'EOF' | tee -a "$GITHUB_OUTPUT"
+          import json, sys, yaml, pathlib
+          entries = []
+          for f in sorted(pathlib.Path("games").glob("*.yml")):
+              try:
+                  cfg = yaml.safe_load(f.read_text())
+                  if not cfg:
+                      continue
+                  if "enabled" not in cfg:
+                      print(f"ERROR: {f.name} is missing required field 'enabled'", file=sys.stderr)
+                      sys.exit(1)
+                  if cfg["enabled"]:
+                      entries.append({
+                          "game": f.stem,
+                          "cloud_project_id": cfg["cloud_project_id"],
+                          "credential_secret": cfg["credential_secret"],
+                          "llava_model": cfg.get("llava_model", "llava:7b"),
+                      })
+              except Exception as e:
+                  print(f"ERROR: Failed to parse {f.name}: {e}", file=sys.stderr)
+                  sys.exit(1)
+          # Emit compact JSON — no spaces — so the empty-matrix guard below can do a reliable string comparison.
+          print(f"matrix={json.dumps({'include': entries}, separators=(',', ':'))}")
+          EOF
+
+  # ─── Job 2: Run pipeline — one job per game, matrix from Job 1 ──────────────
+  run-pipeline:
+    needs: build-matrix
+    # Compact JSON comparison to check if matrix is empty
+    if: ${{ needs.build-matrix.outputs.matrix != '{"include":[]}' }}
+    strategy:
+      fail-fast: false       # One game failing must not cancel others
+      matrix: ${{ fromJSON(needs.build-matrix.outputs.matrix) }}
+    concurrency:
+      group: quota-${{ matrix.cloud_project_id }}
+      cancel-in-progress: false   # Queue; never cancel a running job
+    runs-on: ubuntu-latest
+    timeout-minutes: 45           # Hard outer cap
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Cache Whisper model
+      - name: Cache Whisper model
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/whisper
+          key: whisper-${{ env.WHISPER_MODEL }}
+
+      # Cache Ollama models
+      - name: Cache Ollama models
+        uses: actions/cache@v4
+        with:
+          path: ~/.ollama
+          key: ollama-${{ matrix.llava_model }}
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt && pip install -U yt-dlp
+
+      - name: Install Ollama
+        run: curl -fsSL https://ollama.ai/install.sh | sh
+
+      - name: Pull LLaVA model
+        run: ollama pull ${{ matrix.llava_model }}
+
+      - name: Run pipeline
+        env:
+          WHISPER_MODEL: ${{ env.WHISPER_MODEL }}
+          YOUTUBE_OAUTH_JSON: ${{ secrets[matrix.credential_secret] }}
+          ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python -m bot.pipeline games/${{ matrix.game }}.yml
