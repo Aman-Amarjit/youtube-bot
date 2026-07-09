@@ -1,9 +1,9 @@
 game_name: "Minecraft"
 game_slug: "minecraft"
 enabled: true
-cloud_project_id: "erudite-spot-501908-e0"         # Updated to match your actual GCP project
+cloud_project_id: "erudite-spot-501908-e0"
 credential_secret: "YOUTUBE_OAUTH_JSON"
-schedule: "0 6 * * *"                               # Once a day at 06:00 UTC
+schedule: "* * * * *"                               # Set to match any time for immediate testing
 tags: ["minecraft", "shorts", "gaming", "mc"]
 upload_title_template: "{clip_title} #Shorts"
 upload_description_template: |
