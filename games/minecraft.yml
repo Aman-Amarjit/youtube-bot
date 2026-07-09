@@ -1,9 +1,9 @@
 game_name: "Minecraft"
 game_slug: "minecraft"
 enabled: true
-cloud_project_id: "my-gcp-project-123"             # Change this to your Google Cloud Project ID
-credential_secret: "YOUTUBE_OAUTH_MINECRAFT"       # Change this to your GHA OAuth secret name
-schedule: "0 1,7,13,19 * * *"                      # Runs 4 times a day: 01:00, 07:00, 13:00, 19:00 UTC
+cloud_project_id: "your-gcp-project-id"
+credential_secret: "YOUTUBE_OAUTH_JSON"
+schedule: "0 6 * * *"                               # Once a day at 06:00 UTC
 tags: ["minecraft", "shorts", "gaming", "mc"]
 upload_title_template: "{clip_title} #Shorts"
 upload_description_template: |

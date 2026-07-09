@@ -1,9 +1,9 @@
 game_name: "PUBG"
 game_slug: "pubg"
-enabled: true
-cloud_project_id: "your-gcp-project-pubg"
-credential_secret: "YOUTUBE_OAUTH_PUBG"
-schedule: "0 4,10,16,22 * * *"                     # Runs at 04:00, 10:00, 16:00, 22:00 UTC
+enabled: false                                      # Disabled by default
+cloud_project_id: "your-gcp-project-id"
+credential_secret: "YOUTUBE_OAUTH_JSON"
+schedule: "0 0 * * *"
 tags: ["pubg", "shorts", "gaming", "pubgmobile", "pubgclips"]
 upload_title_template: "{clip_title} #Shorts"
 upload_description_template: |

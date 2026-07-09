@@ -1,9 +1,9 @@
 game_name: "Subnautica"
 game_slug: "subnautica"
-enabled: true
-cloud_project_id: "your-gcp-project-subnautica"
-credential_secret: "YOUTUBE_OAUTH_SUBNAUTICA"
-schedule: "0 5,11,17,23 * * *"                     # Runs at 05:00, 11:00, 17:00, 23:00 UTC
+enabled: false                                      # Disabled by default
+cloud_project_id: "your-gcp-project-id"
+credential_secret: "YOUTUBE_OAUTH_JSON"
+schedule: "0 0 * * *"
 tags: ["subnautica", "shorts", "gaming", "subnauticaclips", "deepsea"]
 upload_title_template: "{clip_title} #Shorts"
 upload_description_template: |
