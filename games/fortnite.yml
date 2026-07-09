@@ -1,0 +1,16 @@
+game_name: "Fortnite"
+game_slug: "fortnite"
+enabled: true
+cloud_project_id: "your-gcp-project-fortnite"       # Use a separate GCP project to avoid quota conflict
+credential_secret: "YOUTUBE_OAUTH_FORTNITE"        # Secret containing OAuth JSON for Fortnite channel
+schedule: "0 3,9,15,21 * * *"                      # Runs 4 times a day (spaced out): 03:00, 09:00, 15:00, 21:00 UTC
+tags: ["fortnite", "shorts", "gaming", "fortniteclips", "fnbr"]
+upload_title_template: "{clip_title} #Shorts"
+upload_description_template: |
+  {voiceover_script}
+
+  source:{source_video_id}
+blocklist: "./blocklists/shared_blocklist.txt"
+sources:
+  - url: "https://www.youtube.com/watch?v=2gUtfB6S4eE"
+    provenance: "creative_commons"

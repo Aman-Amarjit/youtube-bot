@@ -3,7 +3,7 @@ game_slug: "minecraft"
 enabled: true
 cloud_project_id: "my-gcp-project-123"             # Change this to your Google Cloud Project ID
 credential_secret: "YOUTUBE_OAUTH_MINECRAFT"       # Change this to your GHA OAuth secret name
-schedule: "* * * * *"                              # Checks schedule every hourly cron run
+schedule: "0 1,7,13,19 * * *"                      # Runs 4 times a day: 01:00, 07:00, 13:00, 19:00 UTC
 tags: ["minecraft", "shorts", "gaming", "mc"]
 upload_title_template: "{clip_title} #Shorts"
 upload_description_template: |
@@ -12,6 +12,5 @@ upload_description_template: |
   source:{source_video_id}
 blocklist: "./blocklists/shared_blocklist.txt"
 sources:
-  # Example Creative Commons Minecraft video URL (or use a channel_id)
   - url: "https://www.youtube.com/watch?v=F3229b1G6Jc"
     provenance: "creative_commons"
