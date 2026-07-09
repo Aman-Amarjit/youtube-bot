@@ -12,5 +12,6 @@ upload_description_template: |
   source:{source_video_id}
 blocklist: "./blocklists/shared_blocklist.txt"
 sources:
-  - url: "https://www.youtube.com/watch?v=F3229b1G6Jc"
+  # Using active Creative Commons Minecraft gameplay channel GameplaysForFree
+  - channel_id: "UCyjMmPUSDB8yzb4GutNbasw"
     provenance: "creative_commons"
