@@ -2,7 +2,7 @@ name: Auto YouTube Clip Bot
 
 on:
   schedule:
-    - cron: '0 * * * *'    # Hourly; per-game schedule enforced in Python code
+    - cron: '0 0,6,12,18 * * *'    # Runs 4 times a day (00:00, 06:00, 12:00, 18:00 UTC)
   workflow_dispatch:
 
 permissions:
@@ -23,11 +23,11 @@ jobs:
         id: set-matrix
         run: |
           # Reads every games/*.yml, extracts game slug + cloud_project_id,
-          # and emits a JSON array for fromJSON() below.
+          # and emits a single random chosen enabled game for fromJSON().
           #
           # heredoc: pipe goes on the OPENING line so EOF is a terminator
           python - <<'EOF' | tee -a "$GITHUB_OUTPUT"
-          import json, sys, yaml, pathlib
+          import json, sys, yaml, pathlib, random
           entries = []
           for f in sorted(pathlib.Path("games").glob("*.yml")):
               try:
@@ -47,6 +47,11 @@ jobs:
               except Exception as e:
                   print(f"ERROR: Failed to parse {f.name}: {e}", file=sys.stderr)
                   sys.exit(1)
+          
+          # Randomly select exactly one enabled game configuration to run
+          if entries:
+              entries = [random.choice(entries)]
+              
           # Emit compact JSON — no spaces — so the empty-matrix guard below can do a reliable string comparison.
           print(f"matrix={json.dumps({'include': entries}, separators=(',', ':'))}")
           EOF
