@@ -18,4 +18,5 @@ tmp/
 
 # Secrets and credentials
 client_secrets.json
+check_channel.py
 

@@ -53,13 +53,12 @@ def commit_state(filepath: str, new_value: dict, max_retries: int, backoff_type:
     """
     Commit non-counter state files using git fetch -> merge -> push -> retry on conflict loop.
     """
-    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    
     for attempt in range(max_retries):
         run_git(["fetch", "origin", "main"])
         current = read_from_remote_head(filepath)
         merged = deep_merge(current, new_value)
         
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(merged, f, indent=2)
             

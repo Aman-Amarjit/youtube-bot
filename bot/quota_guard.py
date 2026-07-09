@@ -70,8 +70,6 @@ def commit_quota(cloud_project_id: str, game_slug: str, cost: int, counts_toward
     Fetch -> re-apply delta -> push -> retry on conflict loop for state/quota.json.
     """
     path = "state/quota.json"
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    
     for attempt in range(max_retries):
         # Fetch latest origin/main
         run_git(["fetch", "origin", "main"])
@@ -84,6 +82,7 @@ def commit_quota(cloud_project_id: str, game_slug: str, cost: int, counts_toward
         )
         
         # Write local file
+        os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w", encoding="utf-8") as f:
             json.dump(updated, f, indent=2)
             

@@ -5,6 +5,9 @@ on:
     - cron: '0 * * * *'    # Hourly; per-game schedule enforced in Python code
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 env:
   WHISPER_MODEL: base      # Change to 'small' for better transcription quality
 
