@@ -1,7 +1,7 @@
 game_name: "Fortnite"
 game_slug: "fortnite"
 enabled: true
-cloud_project_id: "your-gcp-project-id"
+cloud_project_id: "erudite-spot-501908-e0"         # Updated to match your actual GCP project
 credential_secret: "YOUTUBE_OAUTH_JSON"
 schedule: "0 18 * * *"                              # Once a day at 18:00 UTC
 tags: ["fortnite", "shorts", "gaming", "fortniteclips", "fnbr"]

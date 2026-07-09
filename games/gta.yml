@@ -1,7 +1,7 @@
 game_name: "GTA"
 game_slug: "gta"
 enabled: true
-cloud_project_id: "your-gcp-project-id"
+cloud_project_id: "erudite-spot-501908-e0"         # Updated to match your actual GCP project
 credential_secret: "YOUTUBE_OAUTH_JSON"
 schedule: "0 12 * * *"                              # Once a day at 12:00 UTC
 tags: ["gta", "shorts", "gaming", "gtav", "gta5", "gtaonline", "gtaclips"]
