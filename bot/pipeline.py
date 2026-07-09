@@ -180,6 +180,7 @@ def run_pipeline(game_config_path: str) -> None:
         if config:
             timeout_exit = PipelineExit("error", should_alert=True, message=str(e))
             alerter.send(config, timeout_exit, stage=current_stage)
+        sys.exit(1)
     except Exception as e:
         print(f"Pipeline crashed due to unhandled exception. Stage: {current_stage}. Message: {e}")
         import traceback
@@ -187,6 +188,7 @@ def run_pipeline(game_config_path: str) -> None:
         if config:
             err_exit = PipelineExit("error", should_alert=True, message=f"Unhandled crash: {e}")
             alerter.send(config, err_exit, stage=current_stage)
+        sys.exit(1)
     finally:
         # Cancel GHA SIGALRM
         if hasattr(signal, "alarm"):
