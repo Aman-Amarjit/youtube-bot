@@ -72,12 +72,13 @@ def generate(config: GameConfig, candidate: dict, transcript: str, visuals: list
         "Write exactly 2 sentences. Be energetic and concise. Do NOT include any intro, outro, headers, or quotes. Output ONLY the 2 sentences of voiceover script."
     )
     
-    # 1. Try Ollama (local llama3)
-    ollama_model = getattr(config, "ollama_model", "llama3")
-    script = query_ollama_text(prompt, model_name=ollama_model)
-    if script:
-        print(f"Script generated via local Ollama ({ollama_model}): {script}")
-        return script
+    # 1. Try Ollama (local llama3) if visual analysis is not disabled
+    if os.environ.get("DISABLE_VISUAL_ANALYSIS", "").lower() != "true":
+        ollama_model = getattr(config, "ollama_model", "llama3")
+        script = query_ollama_text(prompt, model_name=ollama_model)
+        if script:
+            print(f"Script generated via local Ollama ({ollama_model}): {script}")
+            return script
         
     # 2. Try Groq (remote fallback)
     script = query_groq_text(prompt)

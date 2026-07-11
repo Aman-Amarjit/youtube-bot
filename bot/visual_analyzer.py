@@ -51,6 +51,10 @@ def analyze(video_path: str, candidate: dict, config: GameConfig) -> List[str]:
     Stage 8: Visual Analysis. Extract 3 frames and describe them using local LLaVA.
     Returns a list of 3 concise descriptions.
     """
+    if os.environ.get("DISABLE_VISUAL_ANALYSIS", "").lower() == "true":
+        print("Visual analysis disabled via environment variable.")
+        return ["Visual analysis disabled."] * 3
+
     game_slug = config.game_slug
     temp_dir = f"tmp/{game_slug}"
     os.makedirs(temp_dir, exist_ok=True)

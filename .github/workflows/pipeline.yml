@@ -10,6 +10,7 @@ permissions:
 
 env:
   WHISPER_MODEL: base      # Change to 'small' for better transcription quality
+  DISABLE_VISUAL_ANALYSIS: 'true'  # Set to 'true' to disable heavy local Ollama/LLaVA visual analysis (recommended on CPU GHA runners to avoid OOMs/timeouts)
 
 jobs:
   # ─── Job 1: Dynamically build the matrix from games/*.yml ───────────────────
@@ -93,6 +94,7 @@ jobs:
 
       # Cache Ollama models
       - name: Cache Ollama models
+        if: env.DISABLE_VISUAL_ANALYSIS != 'true'
         uses: actions/cache@v4
         with:
           path: ~/.ollama
@@ -102,10 +104,23 @@ jobs:
         run: pip install -r requirements.txt && pip install -U yt-dlp
 
       - name: Install Ollama
+        if: env.DISABLE_VISUAL_ANALYSIS != 'true'
         run: curl -fsSL https://ollama.ai/install.sh | sh
 
-      - name: Pull LLaVA model
-        run: ollama pull ${{ matrix.llava_model }}
+      - name: Start Ollama Daemon and Pull LLaVA model
+        if: env.DISABLE_VISUAL_ANALYSIS != 'true'
+        run: |
+          ollama serve &
+          # Wait for Ollama server to start (up to 30 seconds)
+          for i in {1..30}; do
+            if curl -s http://localhost:11434 > /dev/null; then
+              echo "Ollama is ready!"
+              break
+            fi
+            sleep 1
+          done
+          ollama pull ${{ matrix.llava_model }}
+
 
       - name: Run pipeline
         env:
@@ -114,4 +129,5 @@ jobs:
           ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           YOUTUBE_COOKIES_B64: ${{ secrets.YOUTUBE_COOKIES_B64 }}
+          DISABLE_VISUAL_ANALYSIS: ${{ env.DISABLE_VISUAL_ANALYSIS }}
         run: python -m bot.pipeline games/${{ matrix.game }}.yml

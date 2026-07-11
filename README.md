@@ -28,11 +28,19 @@ A fully autonomous YouTube Shorts creation and upload bot powered by AI. It runs
 
 ### 1. GitHub Secrets
 Add the following secrets to your GitHub repository:
-- `YOUTUBE_OAUTH_JSON`: The OAuth JSON credentials block generated during authentication.
+- `YOUTUBE_OAUTH_JSON`: The OAuth JSON credentials block generated during authentication (runs locally using `authenticate.py`).
+- `YOUTUBE_COOKIES_B64`: **(Crucial for GHA)** Base64 encoded `cookies.txt` file from an authenticated browser session. YouTube blocks GHA datacenter IPs by default; cookies are required to bypass these blocks.
+  - *To obtain:* Export your YouTube cookies using a browser extension (e.g., "Get cookies.txt" or "Export cookies"), save them to `cookies.txt` locally, and run `cat cookies.txt | base64 -w 0` (or `base64` on macOS/Linux) to get the base64 string. Save this string as the secret value.
 - `GROQ_API_KEY`: Groq Cloud API Key for script-writing LLM fallback.
 - `ALERT_WEBHOOK_URL` (Optional): Discord/Slack Webhook URL to send pipeline alerts.
 
-### 2. Run Locally
+### 2. Performance & Cost Tuning (Visual Analysis)
+By default, the GHA workflow has visual frames analysis disabled via `DISABLE_VISUAL_ANALYSIS: 'true'`.
+- **Why?** CPU-only GitHub Actions runners do not have GPUs. Loading and running `llava:7b` locally on GHA CPU resources is extremely slow (takes ~15 minutes) and frequently hits the 7GB memory limit, crashing the runner (OOM).
+- **Behavior:** With visual analysis disabled, the bot skips vision processing and falls back to generating voiceover scripts using transcript text and video metadata.
+- **Enabling:** If you are running on a self-hosted runner with a dedicated GPU (or wish to test CPU execution), you can set `DISABLE_VISUAL_ANALYSIS: 'false'` in `.github/workflows/pipeline.yml`. Note that script quality is slightly better when visual grounding is enabled.
+
+### 3. Run Locally
 To run tests or test the pipeline locally:
 ```bash
 # Create and activate virtual environment
