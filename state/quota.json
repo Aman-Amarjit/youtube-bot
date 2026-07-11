@@ -20,8 +20,10 @@
   },
   "2026-07-11": {
     "projects": {
-      "erudite-spot-501908-e0": 1
+      "erudite-spot-501908-e0": 2
     },
-    "discovery": {}
+    "discovery": {
+      "minecraft": 1
+    }
   }
 }
