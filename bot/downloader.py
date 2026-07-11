@@ -75,8 +75,8 @@ def download(candidate: dict, config: GameConfig) -> str:
     cookies_file = _get_cookies_file()
     
     # Use a flexible client list so that if one client (like web) is blocked on GHA,
-    # yt-dlp can fallback to others (like android/ios) which bypass strict PoW signatures.
-    player_client_arg = "ios,android,web"
+    # yt-dlp can fallback to others (like android/ios/tv/web_embedded) which bypass strict PoW signatures.
+    player_client_arg = "ios,android,tv,web_embedded"
 
     # Pre-flight: check if video has actual video formats (not image-only posts)
     check_cmd = [
