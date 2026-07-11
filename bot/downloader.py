@@ -74,17 +74,15 @@ def download(candidate: dict, config: GameConfig) -> str:
     
     cookies_file = _get_cookies_file()
     
-    # When cookies are provided, only the web client supports cookie auth.
-    # ios/android clients skip cookies and fall back to image-only format lists.
-    if cookies_file:
-        player_client_arg = "web"
-    else:
-        player_client_arg = "ios,android,web"
+    # Use a flexible client list so that if one client (like web) is blocked on GHA,
+    # yt-dlp can fallback to others (like android/ios) which bypass strict PoW signatures.
+    player_client_arg = "ios,android,web"
 
     # Pre-flight: check if video has actual video formats (not image-only posts)
     check_cmd = [
         "yt-dlp",
         "--no-warnings",
+        "--js-runtimes", "node",
         "--extractor-args", f"youtube:player_client={player_client_arg}",
         "-J",           # dump JSON info only, no download
         "--skip-download",
@@ -118,6 +116,7 @@ def download(candidate: dict, config: GameConfig) -> str:
         "--sleep-interval", "2",
         "--extractor-retries", "3",
         "--no-playlist",
+        "--js-runtimes", "node",
         "--extractor-args", f"youtube:player_client={player_client_arg}",
         "-o", output_template,
     ]
