@@ -35,7 +35,20 @@ def _get_cookies_file() -> str | None:
     if not cookies_b64:
         return None
     try:
+        # Safe diagnostic logging of length and non-sensitive header characters
+        print(f"DEBUG: YOUTUBE_COOKIES_B64 length: {len(cookies_b64)}")
+        print(f"DEBUG: First 15 chars of YOUTUBE_COOKIES_B64: {repr(cookies_b64[:15])}")
+        
         cookies_bytes = base64.b64decode(cookies_b64)
+        print(f"DEBUG: Decoded bytes length: {len(cookies_bytes)}")
+        print(f"DEBUG: First 20 bytes of decoded content (hex): {cookies_bytes[:20].hex()}")
+        
+        try:
+            cookies_bytes[:20].decode('utf-8')
+            print("DEBUG: First 20 bytes decoded successfully to UTF-8")
+        except Exception as err:
+            print(f"DEBUG: First 20 bytes UTF-8 decode error: {err}")
+            
         tmp = tempfile.NamedTemporaryFile(
             mode="wb", suffix=".txt", delete=False, prefix="yt_cookies_"
         )
