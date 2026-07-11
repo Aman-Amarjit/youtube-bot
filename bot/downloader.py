@@ -88,10 +88,13 @@ def download(candidate: dict, config: GameConfig) -> str:
         "--skip-download",
     ]
     if cookies_file:
-        check_cmd += ["--cookies", cookies_file]
-    check_cmd.append(url)
-    
-    check_res = subprocess.run(check_cmd, capture_output=True, text=True)
+        check_res = subprocess.run(check_cmd + ["--cookies", cookies_file, url], capture_output=True, text=True)
+        if check_res.returncode != 0:
+            print("WARNING: Pre-flight check failed with cookies. Retrying pre-flight without cookies.")
+            check_res = subprocess.run(check_cmd + [url], capture_output=True, text=True)
+    else:
+        check_res = subprocess.run(check_cmd + [url], capture_output=True, text=True)
+        
     if check_res.returncode == 0:
         try:
             import json as _json
@@ -109,28 +112,29 @@ def download(candidate: dict, config: GameConfig) -> str:
         except Exception:
             pass  # If JSON parse fails, proceed and let yt-dlp handle it
 
-    cmd = [
-        "yt-dlp",
-        "-f", "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=1080]+bestaudio/best[height<=1080]/best",
-        "--merge-output-format", "mp4",
-        "--sleep-interval", "2",
-        "--extractor-retries", "3",
-        "--no-playlist",
-        "--js-runtimes", "node",
-        "--extractor-args", f"youtube:player_client={player_client_arg}",
-        "-o", output_template,
-    ]
-    
-    if cookies_file:
-        cmd += ["--cookies", cookies_file]
-    
-    cmd.append(url)
-    
     max_attempts = 4
     cookies_cleanup_done = False
+    current_cookies_file = cookies_file
     
     try:
         for attempt in range(max_attempts):
+            cmd = [
+                "yt-dlp",
+                "-f", "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=1080]+bestaudio/best[height<=1080]/best",
+                "--merge-output-format", "mp4",
+                "--sleep-interval", "2",
+                "--extractor-retries", "3",
+                "--no-playlist",
+                "--js-runtimes", "node",
+                "--extractor-args", f"youtube:player_client={player_client_arg}",
+                "-o", output_template,
+            ]
+            
+            if current_cookies_file:
+                cmd += ["--cookies", current_cookies_file]
+                
+            cmd.append(url)
+            
             print(f"Downloading video {video_id} (Attempt {attempt+1}/{max_attempts})...")
             res = subprocess.run(cmd, capture_output=True, text=True)
             
@@ -149,6 +153,9 @@ def download(candidate: dict, config: GameConfig) -> str:
             else:
                 print(f"Download attempt {attempt+1} failed: returncode={res.returncode}")
                 print(f"yt-dlp stderr: {res.stderr[-2000:]}")
+                if current_cookies_file:
+                    print("WARNING: Download failed with cookies. Retrying without cookies on next attempt.")
+                    current_cookies_file = None
                 
             if attempt < max_attempts - 1:
                 time.sleep(2)
