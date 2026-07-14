@@ -108,23 +108,19 @@ def connect_vpn():
         with open(config_path, "w", encoding="utf-8") as f:
             f.write(config_data)
             
-        # Start OpenVPN client as daemon
+        # Start OpenVPN client as background process using Popen
         print("Starting OpenVPN client...")
         try:
             # Clear any existing openvpn processes first
             subprocess.run(["sudo", "killall", "openvpn"], capture_output=True)
             
-            # Start openvpn daemon
-            proc = subprocess.run([
-                "sudo", "openvpn",
-                "--config", config_path,
-                "--daemon", "openvpn_proc"
-            ], capture_output=True, text=True)
+            vpn_log_path = "vpn_log.txt"
+            with open(vpn_log_path, "w", encoding="utf-8") as log_file:
+                proc = subprocess.Popen([
+                    "sudo", "openvpn",
+                    "--config", config_path
+                ], stdout=log_file, stderr=log_file)
             
-            if proc.returncode != 0:
-                print(f"OpenVPN failed to start: {proc.stderr}")
-                continue
-                
             # Wait up to 25 seconds for the connection to establish and update IP
             connected = False
             for sec in range(25):
@@ -146,7 +142,14 @@ def connect_vpn():
                     pass
                 return
             else:
-                print("VPN connection timed out or failed to update public IP. Retrying another server...")
+                # Read logs to print why it failed
+                print("VPN connection timed out or failed to update public IP. OpenVPN log output:")
+                try:
+                    with open(vpn_log_path, "r", encoding="utf-8") as log_file:
+                        print(log_file.read())
+                except Exception:
+                    pass
+                proc.kill()
                 subprocess.run(["sudo", "killall", "openvpn"], capture_output=True)
         except Exception as e:
             print(f"Error during OpenVPN attempt: {e}")
