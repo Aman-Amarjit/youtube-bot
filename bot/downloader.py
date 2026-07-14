@@ -102,13 +102,23 @@ def download(candidate: dict, config: GameConfig) -> str:
         "-J",           # dump JSON info only, no download
         "--skip-download",
     ]
+    local_browser_cookies = not os.environ.get("GITHUB_ACTIONS")
+    
     if cookies_file:
         check_res = subprocess.run(check_cmd + ["--cookies", cookies_file, url], capture_output=True, text=True)
         if check_res.returncode != 0:
             print("WARNING: Pre-flight check failed with cookies. Retrying pre-flight without cookies.")
-            check_res = subprocess.run(check_cmd + [url], capture_output=True, text=True)
+            if local_browser_cookies:
+                print("DEBUG: Running locally - retrying pre-flight with local Chrome cookies.")
+                check_res = subprocess.run(check_cmd + ["--cookies-from-browser", "chrome", url], capture_output=True, text=True)
+            else:
+                check_res = subprocess.run(check_cmd + [url], capture_output=True, text=True)
     else:
-        check_res = subprocess.run(check_cmd + [url], capture_output=True, text=True)
+        if local_browser_cookies:
+            print("DEBUG: Running locally - executing pre-flight with local Chrome cookies.")
+            check_res = subprocess.run(check_cmd + ["--cookies-from-browser", "chrome", url], capture_output=True, text=True)
+        else:
+            check_res = subprocess.run(check_cmd + [url], capture_output=True, text=True)
         
     if check_res.returncode == 0:
         try:
@@ -147,6 +157,8 @@ def download(candidate: dict, config: GameConfig) -> str:
             
             if current_cookies_file:
                 cmd += ["--cookies", current_cookies_file]
+            elif local_browser_cookies:
+                cmd += ["--cookies-from-browser", "chrome"]
                 
             cmd.append(url)
             
