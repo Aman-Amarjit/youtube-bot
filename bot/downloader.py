@@ -38,17 +38,30 @@ def _get_cookies_file() -> str | None:
         # Safe diagnostic logging of length and non-sensitive header characters
         print(f"DEBUG: YOUTUBE_COOKIES_B64 length: {len(cookies_b64)}")
         print(f"DEBUG: First 15 chars of YOUTUBE_COOKIES_B64: {repr(cookies_b64[:15])}")
+    Writes the YOUTUBE_COOKIES_B64 env var (which can be either a base64-encoded
+    Netscape cookies.txt or the raw plain text cookies) to a temporary file
+    and returns its path. Returns None if not set.
+    """
+    cookies_raw = os.environ.get("YOUTUBE_COOKIES_B64", "").strip()
+    if not cookies_raw:
+        return None
         
-        cookies_bytes = base64.b64decode(cookies_b64)
-        print(f"DEBUG: Decoded bytes length: {len(cookies_bytes)}")
-        print(f"DEBUG: First 20 bytes of decoded content (hex): {cookies_bytes[:20].hex()}")
-        
+    # Check if the raw text is already a cookies file
+    if cookies_raw.startswith("#") or "Netscape" in cookies_raw:
+        cookies_bytes = cookies_raw.encode("utf-8")
+    else:
         try:
-            cookies_bytes[:20].decode('utf-8')
-            print("DEBUG: First 20 bytes decoded successfully to UTF-8")
-        except Exception as err:
-            print(f"DEBUG: First 20 bytes UTF-8 decode error: {err}")
+            decoded_bytes = base64.b64decode(cookies_raw)
+            # Verify the decoded bytes represent a Netscape cookies format
+            decoded_str = decoded_bytes.decode("utf-8", errors="ignore")
+            if decoded_str.startswith("#") or "Netscape" in decoded_str:
+                cookies_bytes = decoded_bytes
+            else:
+                cookies_bytes = cookies_raw.encode("utf-8")
+        except Exception:
+            cookies_bytes = cookies_raw.encode("utf-8")
             
+    try:
         tmp = tempfile.NamedTemporaryFile(
             mode="wb", suffix=".txt", delete=False, prefix="yt_cookies_"
         )
@@ -58,7 +71,7 @@ def _get_cookies_file() -> str | None:
         print(f"YouTube cookies written to {tmp.name}")
         return tmp.name
     except Exception as e:
-        print(f"WARNING: Failed to decode YOUTUBE_COOKIES_B64: {e}. Downloading without cookies.")
+        print(f"WARNING: Failed to write cookies file: {e}. Downloading without cookies.")
         return None
 
 def download(candidate: dict, config: GameConfig) -> str:

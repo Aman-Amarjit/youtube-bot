@@ -1,6 +1,6 @@
 game_name: "Valorant"
 game_slug: "valorant"
-enabled: false
+enabled: true
 cloud_project_id: "erudite-spot-501908-e0"
 credential_secret: "YOUTUBE_OAUTH_JSON"
 schedule: "* * * * *"
