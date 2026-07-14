@@ -131,12 +131,11 @@ def connect_vpn():
             subprocess.run(["sudo", "killall", "openvpn"], capture_output=True)
             
             vpn_log_path = "vpn_log.txt"
-            with open(vpn_log_path, "w", encoding="utf-8") as log_file:
-                proc = subprocess.Popen([
-                    "sudo", "openvpn",
-                    "--config", config_path
-                ], stdout=log_file, stderr=log_file)
-            
+            proc = subprocess.Popen([
+                "sudo", "openvpn",
+                "--config", config_path,
+                "--log", vpn_log_path
+            ], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             # Wait up to 15 seconds for the connection to establish
             connected = False
             for sec in range(15):
