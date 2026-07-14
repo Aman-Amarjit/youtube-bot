@@ -56,6 +56,23 @@ def get_vpn_gate_servers():
         print(f"Error fetching VPN Gate server list: {e}")
         return []
 
+def is_vpn_interface_active():
+    """Checks if a tun/tap interface exists on the system."""
+    try:
+        interfaces = os.listdir("/sys/class/net/")
+        return any(iface.startswith("tun") or iface.startswith("tap") for iface in interfaces)
+    except Exception:
+        return False
+
+def verify_routing():
+    """Verifies that internet routing works by pinging a public IP directly (no DNS)."""
+    try:
+        # Ping Google DNS (8.8.8.8) with 1 packet, 2s timeout
+        res = subprocess.run(["ping", "-c", "1", "-W", "2", "8.8.8.8"], capture_output=True)
+        return res.returncode == 0
+    except Exception:
+        return False
+
 def get_current_ip():
     """Returns the current public IP address."""
     urls = ["https://icanhazip.com", "https://api.ipify.org", "https://ifconfig.me/ip"]
@@ -120,18 +137,18 @@ def connect_vpn():
                     "--config", config_path
                 ], stdout=log_file, stderr=log_file)
             
-            # Wait up to 25 seconds for the connection to establish and update IP
+            # Wait up to 15 seconds for the connection to establish
             connected = False
-            for sec in range(25):
+            for sec in range(15):
                 time.sleep(1)
-                new_ip = get_current_ip()
-                if new_ip and new_ip != initial_ip:
+                if is_vpn_interface_active() and verify_routing():
+                    new_ip = get_current_ip()
                     print(f"✅ VPN connected successfully! New public IP address: {new_ip} ({country})")
                     connected = True
                     break
                 else:
                     if sec % 5 == 0:
-                        print("Waiting for VPN to assign new IP address...")
+                        print("Waiting for VPN interface and routing...")
             
             if connected:
                 # Cleanup config file
