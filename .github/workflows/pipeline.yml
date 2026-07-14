@@ -122,6 +122,12 @@ jobs:
           ollama pull ${{ matrix.llava_model }}
 
 
+      - name: Install OpenVPN
+        run: sudo apt-get update && sudo apt-get install -y openvpn
+
+      - name: Connect to free VPN (VPN Gate)
+        run: python -m bot.vpn_gate
+
       - name: Run pipeline
         env:
           WHISPER_MODEL: ${{ env.WHISPER_MODEL }}
