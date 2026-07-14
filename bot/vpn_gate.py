@@ -98,10 +98,9 @@ def connect_vpn():
             print(f"Failed to decode config: {e}")
             continue
             
-        # Write config to a temporary file
         config_path = "vpn.ovpn"
         # We append some timeout settings to prevent openvpn from hanging forever if the server is dead
-        config_data += "\nconnect-retry-max 2\nresolv-retry 2\ntimeout-transit 5\nhandshake-window 10\n"
+        config_data += "\nconnect-retry-max 2\n"
         # Prevent openvpn from updating system DNS since we just want general routing
         config_data += "\nsetenv PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\n"
         
