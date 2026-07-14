@@ -28,16 +28,6 @@ def _upgrade_yt_dlp() -> None:
 
 def _get_cookies_file() -> str | None:
     """
-    Writes the YOUTUBE_COOKIES_B64 env var (base64-encoded Netscape cookies.txt)
-    to a temporary file and returns its path. Returns None if not set.
-    """
-    cookies_b64 = os.environ.get("YOUTUBE_COOKIES_B64", "").strip()
-    if not cookies_b64:
-        return None
-    try:
-        # Safe diagnostic logging of length and non-sensitive header characters
-        print(f"DEBUG: YOUTUBE_COOKIES_B64 length: {len(cookies_b64)}")
-        print(f"DEBUG: First 15 chars of YOUTUBE_COOKIES_B64: {repr(cookies_b64[:15])}")
     Writes the YOUTUBE_COOKIES_B64 env var (which can be either a base64-encoded
     Netscape cookies.txt or the raw plain text cookies) to a temporary file
     and returns its path. Returns None if not set.
@@ -73,7 +63,6 @@ def _get_cookies_file() -> str | None:
     except Exception as e:
         print(f"WARNING: Failed to write cookies file: {e}. Downloading without cookies.")
         return None
-
 def download(candidate: dict, config: GameConfig) -> str:
     """
     Stage 5: Download the selected candidate video.
