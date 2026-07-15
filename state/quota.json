@@ -55,12 +55,12 @@
   },
   "2026-07-15": {
     "projects": {
-      "erudite-spot-501908-e0": 20
+      "erudite-spot-501908-e0": 21
     },
     "discovery": {
       "gta": 7,
       "minecraft": 8,
-      "fortnite": 2
+      "fortnite": 3
     }
   }
 }
